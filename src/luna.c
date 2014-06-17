@@ -1,19 +1,24 @@
 #include <stdio.h>
 #include <ncurses.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
 
+#include "types.h"
+#include "input.h"
 #include "state.h"
 #include "row.h"
 #include "display_utils.h"
 #include "cursor.h"
 #include "buffer.h"
+#include "LUA.h"
 
 int main(int argc, char **argv) {
   init_state();
   init_buffers();
-
-  /*
+  init_LUA();
 
   if (argc == 1) {
     // no file or options were passed
@@ -25,6 +30,15 @@ int main(int argc, char **argv) {
       char* arg = argv[i];
       if (arg[0] == '-') {
         switch(arg[1]) {
+          case 'h':
+            printf("Luna, A text editor, and then some.\n");
+            printf("WTFPL Licensed\n");
+            return 0;
+            break;
+          case 'v':
+            printf("Luna v0.01\n");
+            return 0;
+            break;
           default:
             break;
         }
@@ -37,27 +51,18 @@ int main(int argc, char **argv) {
     }
   }
 
-  */
-
-  create_buffer_from_scratch();
-
   init_display();
 
-  Buffer *target = get_buffer(0);
-
-  Row *rrows;
-  rrows = calloc(3, sizeof(Row));
-  rrows[0] = (Row){ .content = "Asdq", .length = 4 };
-  rrows[1] = (Row){ .content = "Asdqe", .length = 5 };
-  rrows[2] = (Row){ .content = "Asdqeee", .length = 7 };
+  while (luna_state != EXIT) {
+    draw_buffer(active_buffer);
+    get_input();
   
-  target->rows = rrows;
-
-  draw_buffer(0);
-  
-  getch();
+    lua_getglobal(L, "check_keybindings");
+    lua_call(L, 0, 0);
+  }
 
   end_display();
+  end_LUA();
 
   return 0;
 }

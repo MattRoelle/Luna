@@ -1,14 +1,16 @@
-#include "buffer.h"
-#include "cursor.h"
-#include "row.h"
-#include "types.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "buffer.h"
+#include "LUA.h"
+#include "cursor.h"
+#include "row.h"
+#include "types.h"
+
 void init_buffers() {
   open_buffers = (Buffer *)calloc(1, sizeof(Buffer));
-  n_buffers = 1;
+  n_buffers = 0;
   active_buffer = 1;
 }
 
@@ -19,7 +21,7 @@ luna create_buffer_from_scratch() {
     .index = n_buffers - 1,
     .f_name = NULL,
     .content_buffer = "",
-    .n_rows = 1,
+    .n_rows = 0,
     .rows = (Row *)calloc(1, sizeof(Row)),
   };
 
@@ -56,14 +58,19 @@ Buffer* get_buffer(int id) {
   return NULL;
 }
 
-int get_row_in_buffer(Buffer* buffer, Row* row) {
+luna get_row_in_buffer(int id, Row* row) {
   int i;
-  for(i = 0; i < buffer->n_rows; i++) {
-    if (&buffer->rows[i] == row) {
-      return i;
+  Buffer *target = get_buffer(id);
+  if (target == NULL) {
+    return INVALID_ID;
+  } else {
+    for(i = 0; i < target->n_rows; i++) {
+      if (&target->rows[i] == row) {
+        return i;
+      }
     }
   }
-  return -1;
+  return SUCCESS;
 }
 
 luna switch_buffer(int id) {
@@ -71,6 +78,7 @@ luna switch_buffer(int id) {
     return INVALID_ID;
   } else {
     active_buffer = id;
+
     return id;
   }
 }
@@ -80,13 +88,27 @@ luna add_new_row_to_buffer(int id) {
   if (target == NULL) {
     return INVALID_ID;
   } else {
+    size_t old_size;
+
+    int i;
+    for(i = 0; i < target->n_rows; i++) {
+      old_size += sizeof(Row);
+      old_size += target->rows[i].length * sizeof(char);
+    }
+
+    Row *tmp;
+    tmp = (Row *)malloc(old_size + sizeof(Row));
+    if (tmp) { target->rows = tmp; }
+    else { return OOM; }
+
     target->n_rows++;
-    target->rows = (Row *)realloc(target->rows, target->n_rows * sizeof(Row));
+
     target->rows[target->n_rows - 1] = (Row){
       .content = "",
       .length = 0
     };
   }
+  return SUCCESS;
 }
 
 luna insert_row_in_buffer(int id, int index) {

@@ -2,7 +2,7 @@
 #include "types.h"
 
 void init_state() {
-  luna_state = EDIT;
+  luna_state = NORMAL;
 }
 
 state change_state(state new_state) {

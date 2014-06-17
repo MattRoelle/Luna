@@ -26,7 +26,7 @@ void init_buffers();
 luna create_buffer_from_scratch();
 int create_buffer_from_file(char *);
 
-int get_row_in_buffer(Buffer*, Row*);
+luna get_row_in_buffer(int, Row*);
 
 Buffer* get_buffer(int);
 

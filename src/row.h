@@ -1,5 +1,5 @@
-#ifndef LINE_H
-#define LINE_H
+#ifndef ROW_H
+#define ROW_H
 
 typedef struct row {
   char *content;

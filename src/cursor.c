@@ -24,7 +24,7 @@ luna cursor_move_left(Cursor* cursor, Row* row) {
 }
 
 luna cursor_move_right(Cursor* cursor, Row* row) {
-  if (cursor->col + 1 < row->length) {
+  if (cursor->col < row->length) {
     cursor->col++;
     return SUCCESS;
   }
@@ -36,7 +36,7 @@ luna cursor_move_up(Cursor* cursor, Row* row, int id) {
   if (target == NULL) {
     return INVALID_ID;
   } else {
-    int row_index = get_row_in_buffer(target, row);
+    int row_index = get_row_in_buffer(id, row);
     if (row_index - 1 < 0) { 
       /* If the row_index is nonexistent OR trying to move past the top row */
       return NONEXISTENT_ROW;
@@ -52,7 +52,7 @@ luna cursor_move_down(Cursor* cursor, Row* row, int id) {
   if (target == NULL) {
     return INVALID_ID;
   } else {
-    int row_index = get_row_in_buffer(target, row);
+    int row_index = get_row_in_buffer(id, row);
     if (row_index + 1 >= target->n_rows) { 
       /* If the row_index is nonexistent OR trying to move past the bottom row */
       return NONEXISTENT_ROW;

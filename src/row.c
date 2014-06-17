@@ -10,15 +10,17 @@ void init_row(Row* row) {
 
 void append_character_to_row(Row* row, char c) {
   row->length++;
-  void *tmp = (char *)realloc(row->content, sizeof(char) * row->length);
-  if (tmp) { row->content = tmp; }
+  char *tmp = (char *)malloc(sizeof(char) * row->length);
 
-  row->content[row->length - 1] = c;
+  memcpy(&tmp[0], &row->content[0], sizeof(char) * (row->length-1));
+  tmp[row->length - 1] = c;
+
+  row->content = tmp;
 }
 
 void insert_character_in_row(Row* row, int index, char c) {
   row->length++;
-  void *tmp = (char *)realloc(row->content, sizeof(char) * row->length);
+  char *tmp = (char *)realloc(&row->content, sizeof(char) * row->length);
   if (tmp) { row->content = tmp; }
 
   memcpy(&row->content[index + 1], &row->content[index], sizeof(char) * (row->length - index));
@@ -37,6 +39,6 @@ void remove_character_from_row(Row* row, int index) {
 void remove_sequence_from_row(Row* row, int index, int len) {
   row->length -= len;
   memcpy(&row->content[index], &row->content[index + len], sizeof(char) * (row->length - (index + len)));
-  void *tmp = (char *)realloc(row->content, sizeof(char) * row->length);
+  char *tmp = (char *)realloc(&row->content, sizeof(char) * row->length);
   if (tmp) { row->content = tmp; }
 }
