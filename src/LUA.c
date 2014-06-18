@@ -19,11 +19,14 @@ luna init_LUA() {
   luaL_openlibs(L);
 
   register_luna_functions();
+
+  if (luaL_loadfile(L, "./luna./std/std.lua") || lua_pcall(L, 0, 0, 0)) { 
+    // Relative paths work in the C file but not in the LUA file -_-
+    error(L, "Cannot load Luna std: %s", lua_tostring(L, -1));
+  }
   
-  luaL_loadfile(L, "/home/matt/code/Luna/luna./std/std.lua"); // load the std lua scripts
-  lua_pcall(L, 0, 0, 0);
-  luaL_loadfile(L, "/home/matt/code/Luna/luna./lunarc.lua"); // load the lunarc script
-  lua_pcall(L, 0, 0, 0);
+  // luaL_loadfile(L, "/home/matt/code/Luna/luna./lunarc.lua"); // load the lunarc script
+  // if (lua_pcall(L, 0, 0, 0) != 0) { exit(0); }
 
   return SUCCESS;
 }

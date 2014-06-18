@@ -12,9 +12,6 @@
 
 luna get_input() {
   char c = getch();
-  if (c == 27) {
-    change_state(EXIT);
-  }
   push_input(c);
   return SUCCESS;
 }

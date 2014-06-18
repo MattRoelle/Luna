@@ -58,7 +58,10 @@ int main(int argc, char **argv) {
     get_input();
   
     lua_getglobal(L, "check_keybindings");
-    lua_call(L, 0, 0);
+    if (lua_pcall(L, 0, 0, 0) != 0) {
+      error(L, "Keybinding Error: %s", lua_tostring(L, -1));
+    }
+
   }
 
   end_display();
